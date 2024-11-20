@@ -9,18 +9,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg">
-        <div>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+      <body className="min-h-screen bg-background font-sans antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          {children}
           <Toaster />
-        </div>
+        </ThemeProvider>
       </body>
     </html>
   );
