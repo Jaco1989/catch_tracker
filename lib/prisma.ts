@@ -1,26 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 
-if (!process.env.POSTGRES_PRISMA_URL) {
-  throw new Error("Database connection URL is not defined");
-}
-
-const prismaClientSingleton = () => {
-  return new PrismaClient({
-    datasources: {
-      db: {
-        url: process.env.POSTGRES_PRISMA_URL || "",
-      },
-    },
-    log: ["error"],
-  });
+const globalForPrisma = global as unknown as {
+  prisma: PrismaClient | undefined;
 };
 
-declare global {
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: ["error", "warn"],
+  });
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
 }
-
-const prisma = globalThis.prisma ?? prismaClientSingleton();
-
-if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
 
 export default prisma;

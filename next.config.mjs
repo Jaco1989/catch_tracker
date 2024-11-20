@@ -1,11 +1,25 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: true,
+    serverActions: {
+      enabled: true,
+    },
+    // If you need to use external packages in edge runtime
+    serverComponentsExternalPackages: ["@node-rs/argon2"],
   },
-  typescript: {
-    ignoreBuildErrors: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+      },
+    ],
   },
+  pageExtensions: ["tsx", "ts", "jsx", "js"],
 };
 
-module.exports = nextConfig;
+export default nextConfig;
