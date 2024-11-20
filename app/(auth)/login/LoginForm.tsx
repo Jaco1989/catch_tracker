@@ -42,7 +42,6 @@ const LoginForm = () => {
 
       if (result?.error) {
         toast.error(result.error);
-        // If it's a credentials error, set the form error
         if (result.error.includes("Invalid email or password")) {
           form.setError("email", { message: "Invalid credentials" });
           form.setError("password", { message: "Invalid credentials" });
@@ -50,7 +49,6 @@ const LoginForm = () => {
         return;
       }
 
-      // Success will be handled by the redirect in the server action
       toast.success("Logged in successfully!");
     } catch (error) {
       console.error("Login error:", error);
@@ -61,23 +59,25 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       {/* Back to Home Button */}
       <div className="w-full max-w-md mb-4">
         <Button
           variant="ghost"
           onClick={() => router.push("/")}
-          className="flex items-center text-gray-600 hover:text-gray-900"
+          className="flex items-center text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Home
         </Button>
       </div>
 
-      <div className="w-full max-w-md space-y-6 bg-white p-8 rounded-lg shadow-lg">
+      <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-lg shadow-lg border border-border">
         <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-semibold">Welcome to CatchTrack! 👋</h1>
-          <p className="text-gray-500">
+          <h1 className="text-2xl font-semibold text-foreground">
+            Welcome to CatchTrack! 👋
+          </h1>
+          <p className="text-muted-foreground">
             Please sign-in to your account and start the adventure
           </p>
         </div>
@@ -97,6 +97,7 @@ const LoginForm = () => {
                       disabled={isPending}
                       autoComplete="email"
                       type="email"
+                      className="bg-background"
                     />
                   </FormControl>
                   <FormMessage />
@@ -116,6 +117,7 @@ const LoginForm = () => {
                       {...field}
                       disabled={isPending}
                       autoComplete="current-password"
+                      className="bg-background"
                     />
                   </FormControl>
                   <FormMessage />
@@ -136,13 +138,13 @@ const LoginForm = () => {
                         disabled={isPending}
                       />
                     </FormControl>
-                    <FormLabel className="text-sm text-gray-500">
+                    <FormLabel className="text-sm text-muted-foreground">
                       Remember me
                     </FormLabel>
                   </div>
                   <Link
                     href="/forgot-password"
-                    className="text-sm text-red-500 hover:text-red-600 font-medium"
+                    className="text-sm text-primary hover:text-primary/90 font-medium"
                   >
                     Forgot password?
                   </Link>
@@ -152,12 +154,12 @@ const LoginForm = () => {
 
             <Button
               type="submit"
-              className="w-full bg-red-500 hover:bg-red-600 text-white"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
               disabled={isPending}
             >
               {isPending ? (
                 <div className="flex items-center">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
                   Signing in...
                 </div>
               ) : (
@@ -166,11 +168,11 @@ const LoginForm = () => {
             </Button>
 
             <div className="text-center space-y-4">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-muted-foreground">
                 New on our platform?{" "}
                 <Link
                   href="/register"
-                  className="text-red-500 hover:text-red-600 font-medium underline"
+                  className="text-primary hover:text-primary/90 font-medium underline"
                 >
                   Create an account
                 </Link>

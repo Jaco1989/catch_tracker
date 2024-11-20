@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +30,7 @@ import {
 } from "./validation";
 import { signUp } from "./actions";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
 
 const RegisterForm = () => {
   const router = useRouter();
@@ -76,11 +78,25 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6 bg-white p-8 rounded-lg shadow">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+      {/* Back to Home Button */}
+      <div className="w-full max-w-md mb-4">
+        <Button
+          variant="ghost"
+          onClick={() => router.push("/")}
+          className="flex items-center text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Home
+        </Button>
+      </div>
+
+      <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-lg shadow-lg border border-border">
         <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-semibold">Create an Account 🚀</h1>
-          <p className="text-gray-500">
+          <h1 className="text-2xl font-semibold text-foreground">
+            Create an Account 🚀
+          </h1>
+          <p className="text-muted-foreground">
             Please fill in the details below to register
           </p>
         </div>
@@ -99,6 +115,7 @@ const RegisterForm = () => {
                       {...field}
                       autoComplete="username"
                       disabled={isPending}
+                      className="bg-background"
                     />
                   </FormControl>
                   <FormMessage />
@@ -119,6 +136,7 @@ const RegisterForm = () => {
                       {...field}
                       autoComplete="email"
                       disabled={isPending}
+                      className="bg-background"
                     />
                   </FormControl>
                   <FormMessage />
@@ -138,6 +156,7 @@ const RegisterForm = () => {
                       {...field}
                       autoComplete="new-password"
                       disabled={isPending}
+                      className="bg-background"
                     />
                   </FormControl>
                   <FormMessage />
@@ -157,6 +176,7 @@ const RegisterForm = () => {
                       {...field}
                       autoComplete="new-password"
                       disabled={isPending}
+                      className="bg-background"
                     />
                   </FormControl>
                   <FormMessage />
@@ -176,7 +196,7 @@ const RegisterForm = () => {
                     disabled={isPending}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Select a role" />
                       </SelectTrigger>
                     </FormControl>
@@ -206,11 +226,11 @@ const RegisterForm = () => {
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>
+                    <FormLabel className="text-muted-foreground">
                       I agree to the{" "}
                       <Link
                         href="/terms"
-                        className="text-red-500 hover:text-red-600 underline"
+                        className="text-primary hover:text-primary/90 underline"
                       >
                         terms and conditions
                       </Link>
@@ -222,17 +242,24 @@ const RegisterForm = () => {
 
             <Button
               type="submit"
-              className="w-full bg-red-500 hover:bg-red-600 text-white"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
               disabled={isPending}
             >
-              {isPending ? "Creating Account..." : "Create Account"}
+              {isPending ? (
+                <div className="flex items-center">
+                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
+                  Creating Account...
+                </div>
+              ) : (
+                "Create Account"
+              )}
             </Button>
 
-            <div className="text-center text-sm text-gray-500">
+            <div className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="text-red-500 hover:text-red-600 font-medium"
+                className="text-primary hover:text-primary/90 font-medium"
               >
                 Sign in
               </Link>
