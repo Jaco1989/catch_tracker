@@ -6,7 +6,7 @@ import { Toaster } from "sonner";
 
 export const dynamic = "force-dynamic";
 
-export default async function CustomerLayout({
+export default async function SystemAdminLayout({
   children,
 }: {
   children: React.ReactNode;
