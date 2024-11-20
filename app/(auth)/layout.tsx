@@ -1,5 +1,6 @@
 import { validateRequest } from "@/auth";
 import { redirect } from "next/navigation";
+import { Toaster } from "sonner";
 
 // Define the UserRole enum to match your schema
 enum UserRole {
@@ -20,7 +21,7 @@ enum UserRole {
 
 // Define the routes for each role
 const roleRoutes: Record<UserRole, string> = {
-  [UserRole.USER]: "/registeration_pending",
+  [UserRole.USER]: "/",
   [UserRole.SYSTEMADMINISTRATOR]: "/system_admin",
   [UserRole.SECURITYADMINISTRATOR]: "/security_admin",
   [UserRole.PERMITADMINISTRATOR]: "/permit_admin",
@@ -61,5 +62,10 @@ export default async function RoleBasedLayout({
     }
   }
 
-  return <>{children}</>;
+  return (
+    <div>
+      {children}
+      <Toaster />
+    </div>
+  );
 }

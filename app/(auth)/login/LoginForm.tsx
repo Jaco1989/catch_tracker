@@ -1,9 +1,7 @@
 "use client";
 import React from "react";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
 import {
   Form,
   FormControl,
@@ -15,16 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-
-// Define the form schema
-const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  remember: z.boolean().default(false),
-});
-
-// Infer the type from the schema
-type LoginFormValues = z.infer<typeof loginSchema>;
+import { LoginFormValues, loginSchema } from "./validation";
 
 const LoginForm = () => {
   const form = useForm<LoginFormValues>({
@@ -122,21 +111,7 @@ const LoginForm = () => {
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200" />
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">or</span>
-                </div>
               </div>
-
-              <Button variant="outline" className="w-full">
-                <Image
-                  src="/google.svg"
-                  alt="Google"
-                  width={20}
-                  height={20}
-                  className="mr-2"
-                />
-                Sign in with Google
-              </Button>
             </div>
           </form>
         </Form>

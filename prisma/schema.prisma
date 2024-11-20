@@ -27,26 +27,27 @@ enum UserRole {
 
 // USER AND RELATIONS
 model User {
-  id            String    @id @default(uuid())
-  username      String    @unique
-  firstName     String
-  lastName      String
-  displayName   String
-  email         String    @unique
-  passwordHash  String
-  phoneNumber   String    @default("")
-  streetAddress String
-  addressLine2  String?
-  suburb        String?
-  townCity      String
-  postcode      String
-  country       String
-  avatarUrl     String?
-  agreeTerms    Boolean   @default(false)
-  role          UserRole  @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  Session       Session[]
+  id              String    @id @default(uuid())
+  username        String    @unique
+  firstName       String
+  lastName        String
+  displayName     String
+  email           String    @unique
+  passwordHash    String
+  phoneNumber     String    @default("")
+  streetAddress   String
+  addressLine2    String?
+  suburb          String?
+  townCity        String
+  postcode        String
+  country         String
+  avatarUrl       String?
+  agreeTerms      Boolean   @default(false)
+  role            UserRole  @default(USER)
+  roleApplication UserRole  @default(USER) // Added field for role application
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  Session         Session[]
 
   @@map("users")
 }
