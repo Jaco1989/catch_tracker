@@ -19,6 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { LoginFormValues, loginSchema } from "./validation";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
+import { login } from "./actions";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -36,12 +37,24 @@ const LoginForm = () => {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       setIsPending(true);
-      console.log("Form data:", data);
-      // Add your login logic here
+
+      const result = await login(data);
+
+      if (result?.error) {
+        toast.error(result.error);
+        // If it's a credentials error, set the form error
+        if (result.error.includes("Invalid email or password")) {
+          form.setError("email", { message: "Invalid credentials" });
+          form.setError("password", { message: "Invalid credentials" });
+        }
+        return;
+      }
+
+      // Success will be handled by the redirect in the server action
       toast.success("Logged in successfully!");
     } catch (error) {
+      console.error("Login error:", error);
       toast.error("Failed to sign in. Please try again.");
-      console.error(error);
     } finally {
       setIsPending(false);
     }
@@ -142,7 +155,14 @@ const LoginForm = () => {
               className="w-full bg-red-500 hover:bg-red-600 text-white"
               disabled={isPending}
             >
-              {isPending ? "Signing in..." : "Sign In"}
+              {isPending ? (
+                <div className="flex items-center">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Signing in...
+                </div>
+              ) : (
+                "Sign In"
+              )}
             </Button>
 
             <div className="text-center space-y-4">
