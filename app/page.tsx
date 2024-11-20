@@ -1,3 +1,9 @@
+import WelcomePage from "./Welcome";
+
 export default function Home() {
-  return <div>Home</div>;
+  return (
+    <div>
+      <WelcomePage />
+    </div>
+  );
 }
