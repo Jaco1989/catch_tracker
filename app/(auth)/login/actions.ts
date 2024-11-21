@@ -29,21 +29,21 @@ enum UserRole {
 const roleRoutes: Record<UserRole, string> = {
   [UserRole.USER]: "/register-pending-message",
   [UserRole.SYSTEMADMINISTRATOR]: "/system_admin",
-  [UserRole.SECURITYADMINISTRATOR]: "/admin/security",
-  [UserRole.PERMITADMINISTRATOR]: "/admin/permits",
-  [UserRole.PERMITHOLDER]: "/dashboard/permits",
-  [UserRole.RIGHTSHOLDER]: "/dashboard/rights",
-  [UserRole.SKIPPER]: "/dashboard/skipper",
-  [UserRole.INSPECTOR]: "/dashboard/inspector",
-  [UserRole.MONITOR]: "/dashboard/monitor",
-  [UserRole.DRIVER]: "/dashboard/driver",
-  [UserRole.FACTORYSTOCKCONTROLLER]: "/dashboard/factory",
-  [UserRole.LOCALOUTLETCONTROLLER]: "/dashboard/outlet",
-  [UserRole.EXPORTCONTROLLER]: "/dashboard/export",
+  [UserRole.SECURITYADMINISTRATOR]: "/admin_security",
+  [UserRole.PERMITADMINISTRATOR]: "/admin_permits",
+  [UserRole.PERMITHOLDER]: "/permits",
+  [UserRole.RIGHTSHOLDER]: "/rights",
+  [UserRole.SKIPPER]: "/skipper",
+  [UserRole.INSPECTOR]: "/inspector",
+  [UserRole.MONITOR]: "/monitor",
+  [UserRole.DRIVER]: "/driver",
+  [UserRole.FACTORYSTOCKCONTROLLER]: "/factory",
+  [UserRole.LOCALOUTLETCONTROLLER]: "/outlet",
+  [UserRole.EXPORTCONTROLLER]: "/export",
 };
 
 export async function login(
-  credentials: LoginFormValues
+  credentials: LoginFormValues,
 ): Promise<{ error?: string } | void> {
   try {
     const { email, password } = credentials;
@@ -94,7 +94,7 @@ export async function login(
     cookies().set(
       sessionCookie.name,
       sessionCookie.value,
-      sessionCookie.attributes
+      sessionCookie.attributes,
     );
 
     // Handle routing based on user role
