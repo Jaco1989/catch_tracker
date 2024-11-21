@@ -132,6 +132,18 @@ html {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .w-\[39\.7\%\] {
+    width: 39.7%;
+  }
+  .w-\[28\.3\%\] {
+    width: 28.3%;
+  }
+  .w-\[17\.4\%\] {
+    width: 17.4%;
+  }
+  .w-\[14\.6\%\] {
+    width: 14.6%;
+  }
 }
 
 /* Semi-circle progress component styles */
