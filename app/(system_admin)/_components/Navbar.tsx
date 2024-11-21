@@ -9,6 +9,7 @@ import { RxDividerVertical } from "react-icons/rx";
 import { useSession } from "../SessionProvider";
 import UserButton from "./UserButton";
 import SearchField from "./SearchField";
+import logo from "../assets/logo.png";
 
 const Navbar = () => {
   const session = useSession();
@@ -18,20 +19,23 @@ const Navbar = () => {
       {/* Fixed top navbar */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <nav className="bg-black text-white shadow-lg">
-          <div className="flex items-center justify-between text-xs mx-auto w-full py-6 px-8">
-            <Link href="/customer" className="w-[170px] h-[10px] mb-5">
-              <Image
-                src=""
-                alt="captivityLogo"
-                width={331}
-                height={54}
-                className="h-auto border border-white hover:opacity-80 hover:border-2"
-                priority
-              />
+          <div className="flex items-center justify-between mx-auto w-full px-4 lg:px-8 h-[88px]">
+            {/* Logo container */}
+            <Link href="/customer" className="flex items-center">
+              <div className="relative w-[200px] h-[50px]">
+                <Image
+                  src={logo}
+                  alt="captivityLogo"
+                  fill
+                  className="object-contain hover:opacity-80 transition-opacity"
+                  priority
+                />
+              </div>
             </Link>
 
+            {/* Desktop menu */}
             <div className="hidden md:flex items-center space-x-6">
-              <Link href="/help" className="hover:text-gray-300">
+              <Link href="/help" className="hover:text-gray-300 text-sm">
                 <span>Help</span>
               </Link>
               <div className="flex">
@@ -42,18 +46,19 @@ const Navbar = () => {
                   <UserButton />
                 </div>
               ) : (
-                <>
-                  <Link href="/login" className="hover:text-gray-300">
+                <div className="flex items-center space-x-2">
+                  <Link href="/login" className="hover:text-gray-300 text-sm">
                     Login
                   </Link>
-                  <RxDividerVertical />
-                  <Link href="/signup" className="hover:text-gray-300">
+                  <RxDividerVertical className="text-gray-400" />
+                  <Link href="/signup" className="hover:text-gray-300 text-sm">
                     Register
                   </Link>
-                </>
+                </div>
               )}
             </div>
 
+            {/* Mobile menu */}
             <div className="md:hidden flex items-center">
               {session?.user ? (
                 <UserButton />
@@ -77,39 +82,39 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Spacer */}
+      {/* Spacer for fixed navbar */}
       <div className="h-[120px] md:h-[88px]"></div>
 
       {/* Mobile bottom Nav */}
-      <div className="md:hidden fixed inset-x-0 bottom-0 bg-white shadow-xl shadow-gray-400 border-t-2 border-t-gray-400 border-2 ml-5 mr-5 mb-2 z-50 rounded-xl">
-        <div className="flex justify-around text-gray-500 m-auto">
+      <div className="md:hidden fixed inset-x-0 bottom-0 bg-white shadow-xl shadow-gray-400 border-t-2 border-t-gray-400 border-2 mx-5 mb-2 z-50 rounded-xl">
+        <div className="flex justify-around text-gray-500">
           <Link
             href="/"
             className="flex flex-col items-center py-2 hover:text-red-500"
           >
-            <GoHomeFill />
-            <div className="text-xs mt-2">Home</div>
+            <GoHomeFill size={20} />
+            <div className="text-xs mt-1">Home</div>
           </Link>
           <Link
             href="/mobileCategories"
             className="flex flex-col items-center py-2 hover:text-red-500"
           >
-            <TbCategoryFilled />
-            <div className="text-xs mt-2">Categories</div>
+            <TbCategoryFilled size={20} />
+            <div className="text-xs mt-1">Categories</div>
           </Link>
           <Link
             href="/Favourites"
             className="flex text-gray-600 flex-col items-center py-2 hover:text-red-500"
           >
-            <FaHeart />
-            <div className="text-xs mt-2">Favourites</div>
+            <FaHeart size={20} />
+            <div className="text-xs mt-1">Favourites</div>
           </Link>
           <Link
             href={session?.user ? `/users/${session.user.username}` : "/Login"}
             className="flex flex-col items-center py-2 hover:text-red-500"
           >
-            <MdAccountCircle />
-            <div className="text-xs mt-2">Account</div>
+            <MdAccountCircle size={20} />
+            <div className="text-xs mt-1">Account</div>
           </Link>
         </div>
       </div>

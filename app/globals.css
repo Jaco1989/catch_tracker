@@ -133,3 +133,23 @@ html {
     scrollbar-width: none;
   }
 }
+
+/* Semi-circle progress component styles */
+@layer components {
+  .progress-semicircle {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transform: rotate(var(--progress-rotation, -90deg));
+  }
+
+  .progress-gradient-green {
+    @apply bg-gradient-to-r from-[hsl(var(--chart-1))] to-[hsl(var(--chart-2))];
+  }
+
+  .progress-gradient-blue {
+    @apply bg-gradient-to-r from-[hsl(var(--chart-2))] to-[hsl(var(--chart-3))];
+  }
+
+  .progress-gradient-red {
+    @apply bg-gradient-to-r from-[hsl(var(--chart-4))] to-[hsl(var(--chart-5))];
+  }
+}
