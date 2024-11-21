@@ -32,7 +32,7 @@ const roleRoutes: Record<UserRole, string> = {
   [UserRole.SECURITYADMINISTRATOR]: "/admin_security",
   [UserRole.PERMITADMINISTRATOR]: "/admin_permits",
   [UserRole.PERMITHOLDER]: "/permits",
-  [UserRole.RIGHTSHOLDER]: "/rights",
+  [UserRole.RIGHTSHOLDER]: "/rights_holder",
   [UserRole.SKIPPER]: "/skipper",
   [UserRole.INSPECTOR]: "/inspector",
   [UserRole.MONITOR]: "/monitor",
