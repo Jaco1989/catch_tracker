@@ -8,8 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && next build"
+    "vercel-build": "prisma generate && next build",
+    "db:seed": "node script/seed.js"
   },
+  "type": "module",
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@lucia-auth/adapter-prisma": "^4.0.1",

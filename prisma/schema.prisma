@@ -26,27 +26,33 @@ enum UserRole {
 }
 
 model User {
-  id              String    @id @default(uuid())
-  username        String    @unique
-  firstName       String
-  lastName        String
-  displayName     String
-  email           String    @unique
-  passwordHash    String
-  phoneNumber     String    @default("")
-  streetAddress   String
-  addressLine2    String?
-  suburb          String?
-  townCity        String
-  postcode        String
-  country         String
-  avatarUrl       String?
-  agreeTerms      Boolean   @default(false)
+  id String @id @default(uuid())
+
+  username      String   @unique
+  firstName     String
+  lastName      String
+  displayName   String
+  email         String   @unique
+  passwordHash  String
+  phoneNumber   String   @default("")
+  streetAddress String
+  addressLine2  String?
+  suburb        String?
+  townCity      String
+  postcode      String
+  country       String
+  avatarUrl     String?
+  isVerified    Boolean  @default(false)
+  isActive      Boolean  @default(false)
+  lastLogin     DateTime @default(now())
+  agreeTerms    Boolean  @default(false)
+
   role            UserRole  @default(USER)
   roleApplication UserRole  @default(USER)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   Session         Session[]
+  Quota           Quota[]
 
   @@map("users")
 }
@@ -58,4 +64,34 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+model Quota {
+  id                   String   @id @default(uuid())
+  rightsNr             String
+  quotaCode            String
+  rightsHolder         String
+  sectorName           String
+  quotaAllocation      Float
+  overcatch20232024    Float
+  finalQuotaAllocation Float
+  quotaUsed            Float
+  quotaBalance         Float
+  expiryDate           DateTime
+  season               String
+  area3_4              Float?
+  area7                Float?
+  area8                Float?
+  area11               Float?
+  nearshoreZone        String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation to User
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("quotas")
 }
