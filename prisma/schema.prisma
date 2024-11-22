@@ -78,6 +78,7 @@ model Quota {
   quotaUsed            Float
   quotaBalance         Float
   expiryDate           DateTime
+  dateIssued           DateTime @default("2024-11-15T00:00:00Z")
   season               String
   area3_4              Float?
   area7                Float?
