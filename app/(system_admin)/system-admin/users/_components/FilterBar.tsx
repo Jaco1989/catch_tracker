@@ -34,51 +34,19 @@ interface FilterBarProps {
 export function FilterBar({ initialFilters }: FilterBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    initialFilters.date,
-  );
 
-  const updateSearchParams = (updates: Record<string, string | undefined>) => {
+  const applyFilter = (key: string, value: string | undefined) => {
     const params = new URLSearchParams(searchParams.toString());
-
-    Object.entries(updates).forEach(([key, value]) => {
-      if (
-        value === undefined ||
-        value === null ||
-        value === "" ||
-        value === "all" ||
-        value === "ALL"
-      ) {
-        params.delete(key);
-      } else {
-        params.set(key, value);
-      }
-    });
-
+    if (!value || value === "all" || value === "ALL") {
+      params.delete(key);
+    } else {
+      params.set(key, value);
+    }
+    params.delete("page"); // Reset to first page on filter change
     router.push(`?${params.toString()}`);
   };
 
-  const handleSearch = (value: string) => {
-    updateSearchParams({ search: value });
-  };
-
-  const handleRoleChange = (value: user_role | "ALL") => {
-    updateSearchParams({ role: value === "ALL" ? undefined : value });
-  };
-
-  const handleStatusChange = (value: "active" | "inactive" | "all") => {
-    updateSearchParams({ status: value === "all" ? undefined : value });
-  };
-
-  const handleDateChange = (date: Date | undefined) => {
-    setSelectedDate(date);
-    updateSearchParams({
-      date: date ? date.toISOString() : undefined,
-    });
-  };
-
   const resetFilters = () => {
-    setSelectedDate(undefined);
     router.push("");
   };
 
@@ -89,14 +57,14 @@ export function FilterBar({ initialFilters }: FilterBarProps) {
           <Input
             placeholder="Search users..."
             defaultValue={initialFilters.search}
-            onChange={(e) => handleSearch(e.target.value)}
+            onChange={(e) => applyFilter("search", e.target.value)}
             className="max-w-sm bg-background"
           />
         </div>
 
         <Select
           defaultValue={initialFilters.role || "ALL"}
-          onValueChange={handleRoleChange}
+          onValueChange={(value) => applyFilter("role", value)}
         >
           <SelectTrigger className="w-[180px] bg-background">
             <SelectValue placeholder="Select Role" />
@@ -114,7 +82,7 @@ export function FilterBar({ initialFilters }: FilterBarProps) {
 
         <Select
           defaultValue={initialFilters.status || "all"}
-          onValueChange={handleStatusChange}
+          onValueChange={(value) => applyFilter("status", value)}
         >
           <SelectTrigger className="w-[180px] bg-background">
             <SelectValue placeholder="Status" />
@@ -130,14 +98,16 @@ export function FilterBar({ initialFilters }: FilterBarProps) {
           <PopoverTrigger asChild>
             <Button variant="outline" className="w-[180px] bg-background">
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {selectedDate ? format(selectedDate, "PPP") : "Registration Date"}
+              {initialFilters.date
+                ? format(initialFilters.date, "PPP")
+                : "Registration Date"}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
               mode="single"
-              selected={selectedDate}
-              onSelect={handleDateChange}
+              selected={initialFilters.date}
+              onSelect={(date) => applyFilter("date", date?.toISOString())}
               initialFocus
             />
           </PopoverContent>

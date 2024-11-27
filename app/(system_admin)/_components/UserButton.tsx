@@ -1,3 +1,4 @@
+// UserButton.tsx
 "use client";
 
 import { cn } from "@/lib/utils";
@@ -33,6 +34,8 @@ export default function UserButton({ className }: UserButtonProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
+  const displayName = `${user.firstName} ${user.lastName}`;
+
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
@@ -58,19 +61,19 @@ export default function UserButton({ className }: UserButtonProps) {
             "p-0 h-auto w-auto",
             "hover:bg-transparent focus:bg-transparent active:bg-transparent",
             "data-[state=open]:bg-transparent",
-            className
+            className,
           )}
-          aria-label={`User menu for ${user.displayName}`}
+          aria-label={`User menu for ${displayName}`}
         >
           <UserAvatar
-            avatarUrl={user.avatarUrl}
+            avatarUrl={user.profilePictureUrl}
             size={40}
             className="hover:opacity-80 transition-opacity"
           />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>Logged in as {user.displayName}</DropdownMenuLabel>
+        <DropdownMenuLabel>Logged in as {displayName}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <Link href={`/customer`}>
           <DropdownMenuItem>
@@ -109,7 +112,7 @@ export default function UserButton({ className }: UserButtonProps) {
           disabled={isLoggingOut}
           className={cn(
             "flex items-center justify-between",
-            isLoggingOut && "cursor-not-allowed opacity-50"
+            isLoggingOut && "cursor-not-allowed opacity-50",
           )}
         >
           <div className="flex items-center">
