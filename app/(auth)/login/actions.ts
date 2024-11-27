@@ -5,51 +5,31 @@ import prisma from "@/lib/prisma";
 import { verify } from "@node-rs/argon2";
 import { isRedirectError } from "next/dist/client/components/redirect";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { LoginFormValues } from "./validation";
 
-// Define the UserRole enum based on your schema
-enum UserRole {
-  USER = "USER",
-  SYSTEMADMINISTRATOR = "SYSTEMADMINISTRATOR",
-  SECURITYADMINISTRATOR = "SECURITYADMINISTRATOR",
-  PERMITADMINISTRATOR = "PERMITADMINISTRATOR",
-  PERMITHOLDER = "PERMITHOLDER",
-  RIGHTSHOLDER = "RIGHTSHOLDER",
-  SKIPPER = "SKIPPER",
-  INSPECTOR = "INSPECTOR",
-  MONITOR = "MONITOR",
-  DRIVER = "DRIVER",
-  FACTORYSTOCKCONTROLLER = "FACTORYSTOCKCONTROLLER",
-  LOCALOUTLETCONTROLLER = "LOCALOUTLETCONTROLLER",
-  EXPORTCONTROLLER = "EXPORTCONTROLLER",
-}
-
-// Define route resolvers for each role
-const roleRoutes: Record<UserRole, string> = {
-  [UserRole.USER]: "/register-pending-message",
-  [UserRole.SYSTEMADMINISTRATOR]: "/system_admin",
-  [UserRole.SECURITYADMINISTRATOR]: "/admin_security",
-  [UserRole.PERMITADMINISTRATOR]: "/admin_permits",
-  [UserRole.PERMITHOLDER]: "/permits",
-  [UserRole.RIGHTSHOLDER]: "/rights_holder",
-  [UserRole.SKIPPER]: "/skipper",
-  [UserRole.INSPECTOR]: "/inspector",
-  [UserRole.MONITOR]: "/monitor",
-  [UserRole.DRIVER]: "/driver",
-  [UserRole.FACTORYSTOCKCONTROLLER]: "/factory",
-  [UserRole.LOCALOUTLETCONTROLLER]: "/outlet",
-  [UserRole.EXPORTCONTROLLER]: "/export",
-};
+const roleRoutes = {
+  User: "/register-pending-message",
+  SystemAdministrator: "/system-admin",
+  SecurityAdministrator: "/security-admin",
+  PermitAdministrator: "/permit-admin",
+  PermitHolder: "/permit-holder",
+  RightsHolder: "/rights-holder",
+  Skipper: "/skipper",
+  Inspector: "/inspector",
+  Monitor: "/monitor",
+  Driver: "/driver",
+  FactoryStockController: "/factory-stock",
+  LocalOutletController: "/local-outlet",
+  ExportController: "/export",
+} as const;
 
 export async function login(
   credentials: LoginFormValues,
-): Promise<{ error?: string } | void> {
+): Promise<{ error?: string; redirectTo?: string } | void> {
   try {
     const { email, password } = credentials;
 
-    // Find user by email
-    const existingUser = await prisma.user.findFirst({
+    const existingUser = await prisma.users.findFirst({
       where: {
         email: {
           equals: email,
@@ -58,14 +38,13 @@ export async function login(
       },
     });
 
-    if (!existingUser || !existingUser.passwordHash) {
+    if (!existingUser || !existingUser.password_hash) {
       return {
         error: "Invalid email or password",
       };
     }
 
-    // Verify password
-    const validPassword = await verify(existingUser.passwordHash, password, {
+    const validPassword = await verify(existingUser.password_hash, password, {
       memoryCost: 19456,
       timeCost: 2,
       outputLen: 32,
@@ -78,50 +57,60 @@ export async function login(
       };
     }
 
-    const userRole = existingUser.role as UserRole;
+    if (!existingUser.is_active) {
+      return {
+        error:
+          "Your account has been deactivated. Please contact an administrator.",
+      };
+    }
 
-    // Handle USER role differently - no session creation
-    if (userRole === UserRole.USER) {
+    if (existingUser.role === "User") {
       return {
         error:
           "Your account is pending approval. Please wait for administrator review.",
       };
     }
 
-    // For all other roles, create session and proceed
-    const session = await lucia.createSession(existingUser.id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
+    // Create session in the database first
+    const dbSession = await prisma.session.create({
+      data: {
+        id: crypto.randomUUID(),
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        users: {
+          connect: {
+            user_id: existingUser.user_id,
+          },
+        },
+      },
+    });
+
+    const sessionCookie = lucia.createSessionCookie(dbSession.id);
     cookies().set(
       sessionCookie.name,
       sessionCookie.value,
       sessionCookie.attributes,
     );
 
-    // Handle routing based on user role
-    const redirectPath = roleRoutes[userRole];
+    await prisma.users.update({
+      where: { user_id: existingUser.user_id },
+      data: { last_login: new Date() },
+    });
 
+    const redirectPath = roleRoutes[existingUser.role];
     if (!redirectPath) {
-      console.error("No route defined for role:", userRole);
       return {
         error: "Unable to determine user access. Please contact support.",
       };
     }
 
-    // Redirect to role-specific dashboard
-    return redirect(redirectPath);
+    return {
+      redirectTo: redirectPath,
+    };
   } catch (error) {
     if (isRedirectError(error)) throw error;
-
     console.error("Login error:", error);
     return {
       error: "Something went wrong. Please try again.",
     };
   }
 }
-
-// Helper type for the login response
-export type LoginResponse = {
-  error?: string;
-  success?: boolean;
-  redirectTo?: string;
-};

@@ -18,8 +18,14 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LoginFormValues, loginSchema } from "./validation";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Info } from "lucide-react";
 import { login } from "./actions";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -37,7 +43,6 @@ const LoginForm = () => {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       setIsPending(true);
-
       const result = await login(data);
 
       if (result?.error) {
@@ -49,7 +54,11 @@ const LoginForm = () => {
         return;
       }
 
-      toast.success("Logged in successfully!");
+      if (result?.redirectTo) {
+        toast.success("Logged in successfully!");
+        router.push(result.redirectTo);
+        return;
+      }
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Failed to sign in. Please try again.");
@@ -60,7 +69,6 @@ const LoginForm = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      {/* Back to Home Button */}
       <div className="w-full max-w-md mb-4">
         <Button
           variant="ghost"
@@ -78,7 +86,7 @@ const LoginForm = () => {
             Welcome to CatchTrack! 👋
           </h1>
           <p className="text-muted-foreground">
-            Please sign-in to your account and start the adventure
+            Please sign in to your account to continue
           </p>
         </div>
 
@@ -110,7 +118,24 @@ const LoginForm = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Password</FormLabel>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-4 w-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Password must contain:</p>
+                          <p>- At least 8 characters</p>
+                          <p>- One uppercase letter</p>
+                          <p>- One lowercase letter</p>
+                          <p>- One number</p>
+                          <p>- One special character</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <FormControl>
                     <Input
                       type="password"
@@ -158,7 +183,7 @@ const LoginForm = () => {
               disabled={isPending}
             >
               {isPending ? (
-                <div className="flex items-center">
+                <div className="flex items-center justify-center">
                   <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
                   Signing in...
                 </div>

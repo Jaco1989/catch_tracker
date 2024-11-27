@@ -5,20 +5,32 @@ import React, { createContext, useContext } from "react";
 
 interface SessionContext {
   user: User & {
+    userId: number;
+    username: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    rsaId: string | null;
+    cellNumber: string | null;
+    physicalAddress: string | null;
+    profilePictureUrl: string | null;
+    isVerified: boolean | null;
+    isActive: boolean | null;
     role:
-      | "USER"
-      | "SYSTEMADMINISTRATOR"
-      | "SECURITYADMINISTRATOR"
-      | "PERMITADMINISTRATOR"
-      | "PERMITHOLDER"
-      | "RIGHTSHOLDER"
-      | "SKIPPER"
-      | "INSPECTOR"
-      | "MONITOR"
-      | "DRIVER"
-      | "FACTORYSTOCKCONTROLLER"
-      | "LOCALOUTLETCONTROLLER"
-      | "EXPORTCONTROLLER";
+      | "User"
+      | "SystemAdministrator"
+      | "SecurityAdministrator"
+      | "PermitAdministrator"
+      | "PermitHolder"
+      | "RightsHolder"
+      | "Skipper"
+      | "Inspector"
+      | "Monitor"
+      | "Driver"
+      | "FactoryStockController"
+      | "LocalOutletController"
+      | "ExportController";
+    quotaCode: string | null;
   };
   session: Session;
 }

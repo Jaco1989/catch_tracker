@@ -5,31 +5,35 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 import prisma from "./lib/prisma";
 
-const adapter = new PrismaAdapter(prisma.session, prisma.user);
+const adapter = new PrismaAdapter(prisma.session, prisma.users);
 
 interface DatabaseUserAttributes {
-  id: string;
+  user_id: number;
   username: string;
-  displayName: string;
-  firstName: string;
-  lastName: string;
   email: string;
-  avatarUrl: string | null;
-  googleId: string | null;
+  first_name: string;
+  last_name: string;
+  rsa_id: string | null;
+  cell_number: string | null;
+  physical_address: string | null;
+  profile_picture_url: string | null;
+  is_verified: boolean | null;
+  is_active: boolean | null;
   role:
-    | "USER"
-    | "SYSTEMADMINISTRATOR"
-    | "SECURITYADMINISTRATOR"
-    | "PERMITADMINISTRATOR"
-    | "PERMITHOLDER"
-    | "RIGHTSHOLDER"
-    | "SKIPPER"
-    | "INSPECTOR"
-    | "MONITOR"
-    | "DRIVER"
-    | "FACTORYSTOCKCONTROLLER"
-    | "LOCALOUTLETCONTROLLER"
-    | "EXPORTCONTROLLER";
+    | "User"
+    | "SystemAdministrator"
+    | "SecurityAdministrator"
+    | "PermitAdministrator"
+    | "PermitHolder"
+    | "RightsHolder"
+    | "Skipper"
+    | "Inspector"
+    | "Monitor"
+    | "Driver"
+    | "FactoryStockController"
+    | "LocalOutletController"
+    | "ExportController";
+  quota_code: string | null;
 }
 
 export const lucia = new Lucia(adapter, {
@@ -39,16 +43,21 @@ export const lucia = new Lucia(adapter, {
       secure: process.env.NODE_ENV === "production",
     },
   },
-  getUserAttributes(databaseUserAttributes) {
+  getUserAttributes: (attributes) => {
     return {
-      id: databaseUserAttributes.id,
-      username: databaseUserAttributes.username,
-      displayName: databaseUserAttributes.displayName,
-      firstName: databaseUserAttributes.firstName,
-      lastName: databaseUserAttributes.lastName,
-      email: databaseUserAttributes.email,
-      avatarUrl: databaseUserAttributes.avatarUrl,
-      role: databaseUserAttributes.role,
+      userId: attributes.user_id,
+      username: attributes.username,
+      email: attributes.email,
+      firstName: attributes.first_name,
+      lastName: attributes.last_name,
+      rsaId: attributes.rsa_id,
+      cellNumber: attributes.cell_number,
+      physicalAddress: attributes.physical_address,
+      profilePictureUrl: attributes.profile_picture_url,
+      isVerified: attributes.is_verified,
+      isActive: attributes.is_active,
+      role: attributes.role,
+      quotaCode: attributes.quota_code,
     };
   },
 });
@@ -60,35 +69,10 @@ declare module "lucia" {
   }
 }
 
-interface DatabaseUserAttributes {
-  id: string;
-  username: string;
-  displayName: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  avatarUrl: string | null;
-  googleId: string | null;
-  role:
-    | "USER"
-    | "SYSTEMADMINISTRATOR"
-    | "SECURITYADMINISTRATOR"
-    | "PERMITADMINISTRATOR"
-    | "PERMITHOLDER"
-    | "RIGHTSHOLDER"
-    | "SKIPPER"
-    | "INSPECTOR"
-    | "MONITOR"
-    | "DRIVER"
-    | "FACTORYSTOCKCONTROLLER"
-    | "LOCALOUTLETCONTROLLER"
-    | "EXPORTCONTROLLER";
-}
-
 export const google = new Google(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!,
-  `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/google`
+  `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/google`,
 );
 
 export const validateRequest = cache(
@@ -96,7 +80,6 @@ export const validateRequest = cache(
     { user: User; session: Session } | { user: null; session: null }
   > => {
     const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
-
     if (!sessionId) {
       return {
         user: null,
@@ -105,14 +88,13 @@ export const validateRequest = cache(
     }
 
     const result = await lucia.validateSession(sessionId);
-
     try {
       if (result.session && result.session.fresh) {
         const sessionCookie = lucia.createSessionCookie(result.session.id);
         cookies().set(
           sessionCookie.name,
           sessionCookie.value,
-          sessionCookie.attributes
+          sessionCookie.attributes,
         );
       }
       if (!result.session) {
@@ -120,35 +102,11 @@ export const validateRequest = cache(
         cookies().set(
           sessionCookie.name,
           sessionCookie.value,
-          sessionCookie.attributes
+          sessionCookie.attributes,
         );
       }
     } catch {}
 
     return result;
-  }
+  },
 );
-
-export const hasRole = (
-  user: User,
-  requiredRole: DatabaseUserAttributes["role"]
-) => {
-  const roleHierarchy = [
-    "USER",
-    "SYSTEMADMINISTRATOR",
-    "SECURITYADMINISTRATOR",
-    "PERMITADMINISTRATOR",
-    "PERMITHOLDER",
-    "RIGHTSHOLDER",
-    "SKIPPER",
-    "INSPECTOR",
-    "MONITOR",
-    "DRIVER",
-    "FACTORYSTOCKCONTROLLER",
-    "LOCALOUTLETCONTROLLER",
-    "EXPORTCONTROLLER",
-  ];
-  return (
-    roleHierarchy.indexOf(user.role) >= roleHierarchy.indexOf(requiredRole)
-  );
-};
