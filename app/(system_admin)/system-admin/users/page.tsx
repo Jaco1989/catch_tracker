@@ -1,12 +1,9 @@
-// page.tsx
 import React from "react";
 import { validateRequest } from "@/auth";
 import { redirect } from "next/navigation";
 import { getUserTableData } from "./actions";
-import { DataTable } from "./_components/DataTable";
-import { FilterBar } from "./_components/FilterBar";
-import { UserAnalytics } from "./_components/UserAnalytics";
 import { user_role } from "@prisma/client";
+import ClientPageContent from "./_components/ClientPageContent";
 
 interface PageProps {
   searchParams: {
@@ -25,48 +22,31 @@ export default async function UserTable({ searchParams }: PageProps) {
     redirect("/unauthorized");
   }
 
-  const page = Number(searchParams.page) || 1;
-  const search = searchParams.search || "";
-  const role = (searchParams.role as user_role | "ALL") || "ALL";
-  const status =
-    (searchParams.status as "active" | "inactive" | "all") || "all";
-  const registrationDate = searchParams.date
-    ? new Date(searchParams.date)
-    : undefined;
-
-  // Create initial filters
-  const initialFilters = {
-    search,
-    role,
-    status,
-    date: registrationDate,
-  };
-
-  // Fetch data with filters
+  // Fetch all data at once for client-side filtering
   const initialData = await getUserTableData({
-    page,
-    pageSize: 10,
+    page: 1,
+    pageSize: 1000, // Get all records for client-side filtering
     sortBy: "created_at",
     sortOrder: "desc",
-    searchTerm: search,
-    role: role === "ALL" ? undefined : (role as user_role),
-    isActive:
-      status === "active" ? true : status === "inactive" ? false : undefined,
-    registrationDate,
   });
 
   if (!initialData.success) {
     return <div>Error loading user data</div>;
   }
 
+  const initialFilters = {
+    search: searchParams.search || "",
+    role: (searchParams.role as user_role | "ALL") || "ALL",
+    status: (searchParams.status as "active" | "inactive" | "all") || "all",
+    date: searchParams.date ? new Date(searchParams.date) : undefined,
+  };
+
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold tracking-tight">User Management</h1>
-      <UserAnalytics analytics={initialData.data.analytics} />
-      <FilterBar initialFilters={initialFilters} />
-      <DataTable
+      <ClientPageContent
         initialData={initialData.data}
-        currentFilters={initialFilters}
+        initialFilters={initialFilters}
       />
     </div>
   );
